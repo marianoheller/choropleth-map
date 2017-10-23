@@ -5,10 +5,15 @@
     color: #fff;
     border-radius: 2px;
     pointer-events: none;
+    font-family: "Roboto", sans-serif;
+}
+
+text {
+    font-family: "Roboto", sans-serif;
 }
 
 
-path:hover {
+.mapPath:hover {
     fill: red;
 }
   

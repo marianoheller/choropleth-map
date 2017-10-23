@@ -54,7 +54,7 @@ const drawChart = function(size) {
     .classed('map-layer', true);
 
     const legend = svg.append('g')
-    .attr("transform", `translate(${size.width/2}, ${size.margin.top/2})`)
+    .attr("transform", `translate(${2*size.width/3}, ${size.margin.top})`)
     .classed("legend", true);
 
     const gradient = legend.append("defs")
@@ -94,6 +94,7 @@ const drawChart = function(size) {
             .data(features)
             .enter().append('path')
             .attr('d', path)
+            .classed('mapPath', true)
             .attr("fill", (d) => {
                 const currentData = data.find( (county) => county.fips===d.id );
                 return color(currentData.bachelorsOrHigher);
@@ -116,14 +117,20 @@ const drawChart = function(size) {
             .attr("width", size.legend.width)
             .attr("height", size.legend.height)
             .style("fill", "url(#gradient)");
-            /*
+
+            //Another scale necessary bc the color scale doesnt work for axes
+            const legendScale = d3.scaleLinear()
+            .domain([dataMin, dataMax])
+            .range([0, size.legend.width]);
             legend.append("g")
             .attr("transform", `translate(
-                ${size.legend.margin.top},
-                ${size.legend.height - size.legend.margin.bottom}
+                ${0},
+                ${size.legend.height}
             )`)
-            .call(d3.axisBottom(color));
-            */
+            .call(d3.axisBottom(legendScale)
+                .tickValues([dataMin, (dataMin+dataMax)/2, dataMax])
+                .tickFormat((d) => `${d3.format(".1f")(d)}%`)
+            );
             
         });
     });
