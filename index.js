@@ -68,7 +68,10 @@ const drawChart = function(size) {
     
     const path = d3.geoPath();
     
-    const tip = d3.tip().attr('class', 'd3-tip').html((d) => {
+    const tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .attr("id", "tooltip")
+    .html((d) => {
         return (
             `${d.area_name} County, ${d.state}: ${d.bachelorsOrHigher}%`
         )
@@ -94,7 +97,9 @@ const drawChart = function(size) {
             .data(features)
             .enter().append('path')
             .attr('d', path)
-            .classed('mapPath', true)
+            .classed('county mapPath', true)
+            .attr("data-fips", (d) => d.id )
+            .attr("data-education", (d) => data.find( (county) => county.fips===d.id ).bachelorsOrHigher )
             .attr("fill", (d) => {
                 const currentData = data.find( (county) => county.fips===d.id );
                 return color(currentData.bachelorsOrHigher);
@@ -106,6 +111,7 @@ const drawChart = function(size) {
                 if ( coords[0] < size.width/4) tip.direction("ne");
                 if ( coords[0] > 3*size.width/4) tip.direction("nw");
                 if ( coords[0] < 3*size.width/4 && coords[0] > size.width/4 ) tip.direction("n");
+                tip.attr("data-education", data.find( (county) => county.fips===d.id ).bachelorsOrHigher );
                 tip.show(data.find( (county) => county.fips===d.id ),i);
             })
             .on('mouseout', tip.hide);
@@ -116,7 +122,8 @@ const drawChart = function(size) {
             legend.append("rect")
             .attr("width", size.legend.width)
             .attr("height", size.legend.height)
-            .style("fill", "url(#gradient)");
+            .style("fill", "url(#gradient)")
+            .attr("id", "legend");
 
             //Another scale necessary bc the color scale doesnt work for axes
             const legendScale = d3.scaleLinear()
